@@ -1,18 +1,17 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import ChatRoom from "./ChatRoom";
 import WelcomeScreen from "./WelcomeScreen";
 
 class App extends Component {
   state = {
     user: {
-      name: localStorage.getItem("name") || `AnakBawang${Math.ceil(Math.random() * 100)}`,
+      name: `AnakBawang${Math.ceil(Math.random() * 100)}`,
       color: localStorage.getItem("color") ||  "#fc5c65"
     },
     ready: false
   }
 
   setUser = user => {
-    user && localStorage.setItem("name", user.name)
     user && localStorage.setItem("color", user.color)
     this.setState({ user })
   }
@@ -21,8 +20,9 @@ class App extends Component {
 
   render() {
     const { user, ready } = this.state
+
     return (
-      <Fragment>
+      <div className="container" style={{ backgroundColor: user.color }}>
         {
           ready ? (
             <ChatRoom user={user} setReadyStatus={this.setReadyStatus} />
@@ -30,7 +30,7 @@ class App extends Component {
             <WelcomeScreen user={user} setUser={this.setUser} setReadyStatus={this.setReadyStatus} />
           )
         }
-      </Fragment>
+      </div>
     );
   }
 }

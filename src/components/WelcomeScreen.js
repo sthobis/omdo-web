@@ -18,42 +18,39 @@ class WelcomeScreen extends Component {
   render() {
     const { user, setReadyStatus } = this.props
     return (
-      <div className="container" style={{ backgroundColor: user.color }}>
-        <form
-          className="user-form"
-          onSubmit={e => setReadyStatus(true) }
-        >
-          <div className="field">
-            <input
-              autoFocus
-              type="text"
-              id="username"
-              name="username"
-              value={user.name}
-              onChange={e => this.setUserProps("name", e.target.value)}
-              placeholder="e.g. Anak Bawang"
-              maxLength={30}
-            />
+      <form
+        className="user-form"
+        onSubmit={e => setReadyStatus(true) }
+      >
+        <div className="field">
+          <input
+            autoFocus
+            type="text"
+            id="username"
+            name="username"
+            value={user.name}
+            onChange={e => this.setUserProps("name", e.target.value)}
+            placeholder="e.g. Anak Bawang"
+            maxLength={30}
+          />
+        </div>
+        <div className="field">
+          <div className="color-palette">
+            {
+              colorPalette.map(color => (
+                <span
+                  key={color}
+                  style={{ background: color }}
+                  onClick={e => this.setUserProps("color", color)}
+                />
+              ))
+            }
           </div>
-          <div className="field">
-            <label>Color</label>
-            <div className="color-palette">
-              {
-                colorPalette.map(color => (
-                  <span
-                    key={color}
-                    style={{ background: color }}
-                    onClick={e => this.setUserProps("color", color)}
-                  />
-                ))
-              }
-            </div>
-          </div>
-          <div className="field">
-            <button></button>
-          </div>
-        </form>
-      </div>
+        </div>
+        <div className="field">
+          <button></button>
+        </div>
+      </form>
     )
   }
 }

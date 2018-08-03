@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import io from "socket.io-client";
 
 const EVENT = {
@@ -23,11 +23,9 @@ class ChatRoom extends Component {
   };
 
   componentDidMount() {
-    const { setReadyStatus } = this.props;
-
     const source =
       process.env.NODE_ENV === "production"
-        ? "https://128.199.222.169/omdo"
+        ? "https://omdo.duajarimanis.com"
         : "http://localhost:3003";
     this.socket = io(source, {
       reconnection: false
@@ -73,17 +71,18 @@ class ChatRoom extends Component {
     localStorage.setItem("draft", e.target.value);
   };
 
-  sendMessage = e => {
+  sendMessage = async e => {
     if (e.keyCode === 13) {
       // user pressed "Enter"
       const { user } = this.props;
       const { history, draft } = this.state;
-      this.socket.emit(EVENT.CLIENT_SEND_MESSAGE, { user, message: draft });
+      const payload = await this.prepareMessage(draft);
+      this.socket.emit(EVENT.CLIENT_SEND_MESSAGE, { user, ...payload });
       // do an optimist update of history
       const newHistory = history.slice();
       newHistory.push({
         user,
-        message: draft
+        ...payload
       });
       this.setState({
         history: newHistory,
@@ -93,19 +92,72 @@ class ChatRoom extends Component {
     }
   };
 
+  prepareMessage = message => {
+    // simple giphy command validation
+    let [textBeforeGiphy, giphyKeyword] = message.split("/giphy ");
+    if (!textBeforeGiphy && giphyKeyword) {
+      return fetch(
+        `http://api.giphy.com/v1/gifs/translate?s=${giphyKeyword}&api_key=ZSkSxLkYCxWoRNORLH7V2CZgCumTHsXu`
+      )
+        .then(res => {
+          if (res.ok) return res.json();
+          else throw "Fetch error";
+        })
+        .then(res => {
+          if (res.meta.status === 200) return res.data;
+          else throw "Giphy error";
+        })
+        .then(data => {
+          return {
+            embed: {
+              type: "giphy",
+              src: data.images.original.url
+            }
+          };
+        });
+    } else {
+      return Promise.resolve({ message });
+    }
+  };
+
+  printMessage = obj => {
+    if (obj.message) {
+      return obj.message;
+    } else {
+      switch (obj.embed.type) {
+        case "giphy": {
+          return (
+            <Fragment>
+              <br />
+              <img src={obj.embed.src} alt="giphy" />
+            </Fragment>
+          );
+        }
+        default: {
+          return null;
+        }
+      }
+    }
+  };
+
   render() {
+    const { user } = this.props;
     const { history, users, draft } = this.state;
 
     return (
       <div className="chat-room">
         <main>
           <div className="chat-list">
+            <p>
+              Welcome {user.name}! <br />
+              To send gif start with /giphy e.g. /giphy awesome
+            </p>
             {history.map((obj, index) => (
               <p key={index}>
                 <span style={{ color: obj.user.color }}>
                   {`${obj.user.name}: `}
                 </span>
-                {obj.message}
+                {this.printMessage(obj)}
               </p>
             ))}
           </div>
@@ -128,7 +180,7 @@ class ChatRoom extends Component {
             ))}
           </div>
           <button type="button" onClick={this.leaveRoom}>
-            Leave Room
+            Leave
           </button>
         </aside>
       </div>

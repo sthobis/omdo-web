@@ -36,7 +36,7 @@ class WelcomeScreen extends Component {
   render() {
     const { user, setReadyStatus } = this.props;
     return (
-      <form className="user-form" onSubmit={e => setReadyStatus(true)}>
+      <div className="user-form">
         <div className="field">
           <input
             autoFocus
@@ -61,9 +61,9 @@ class WelcomeScreen extends Component {
           </div>
         </div>
         <div className="field">
-          <button />
+          <button onClick={e => setReadyStatus(true)} />
         </div>
-      </form>
+      </div>
     );
   }
 }

@@ -97,7 +97,7 @@ class ChatRoom extends Component {
     let [textBeforeGiphy, giphyKeyword] = message.split("/giphy ");
     if (!textBeforeGiphy && giphyKeyword) {
       return fetch(
-        `http://api.giphy.com/v1/gifs/translate?s=${giphyKeyword}&api_key=ZSkSxLkYCxWoRNORLH7V2CZgCumTHsXu`
+        `https://api.giphy.com/v1/gifs/translate?s=${giphyKeyword}&api_key=ZSkSxLkYCxWoRNORLH7V2CZgCumTHsXu`
       )
         .then(res => {
           if (res.ok) return res.json();

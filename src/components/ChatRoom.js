@@ -12,101 +12,102 @@ const EVENT = {
   CLIENT_SEND_MESSAGE: "client_send_message",
   SERVER_JOIN_ERROR: "server_join_error",
   SERVER_UPDATE_USER_LIST: "server_update_user_list",
-  SERVER_UPDATE_HISTORY: "server_update_history",
-}
+  SERVER_UPDATE_HISTORY: "server_update_history"
+};
 
 class ChatRoom extends Component {
   state = {
     history: [],
     users: [],
     draft: localStorage.getItem("draft") || ""
-  }
+  };
 
   componentDidMount() {
-    const { setReadyStatus } = this.props
+    const { setReadyStatus } = this.props;
 
-    const source = process.env.NODE_ENV === "production" ? "https://128.199.222.169/omdo" : "http://localhost:3003"
+    const source =
+      process.env.NODE_ENV === "production"
+        ? "https://128.199.222.169/omdo"
+        : "http://localhost:3003";
     this.socket = io(source, {
       reconnection: false
-    })
-    this.socket.on(EVENT.CONNECT, this.joinRoom)
-    this.socket.on(EVENT.CONNECT_ERROR, console.log)
-    this.socket.on(EVENT.SERVER_JOIN_ERROR, this.handleRejection)
-    this.socket.on(EVENT.SERVER_UPDATE_USER_LIST, this.updateUsers)
-    this.socket.on(EVENT.SERVER_UPDATE_HISTORY, this.addNewMessage)
+    });
+    this.socket.on(EVENT.CONNECT, this.joinRoom);
+    this.socket.on(EVENT.CONNECT_ERROR, console.log);
+    this.socket.on(EVENT.SERVER_JOIN_ERROR, this.handleRejection);
+    this.socket.on(EVENT.SERVER_UPDATE_USER_LIST, this.updateUsers);
+    this.socket.on(EVENT.SERVER_UPDATE_HISTORY, this.addNewMessage);
   }
 
   joinRoom = () => {
-    const { user } = this.props
-    this.socket.emit(EVENT.CLIENT_JOIN_ROOM, user, this.updateUsers)
-  }
+    const { user } = this.props;
+    this.socket.emit(EVENT.CLIENT_JOIN_ROOM, user, this.updateUsers);
+  };
 
   leaveRoom = e => {
-    const { setReadyStatus } = this.props
-    this.socket.close()
-    setReadyStatus(false)
-  }
+    const { setReadyStatus } = this.props;
+    this.socket.close();
+    setReadyStatus(false);
+  };
 
   handleRejection = message => {
-    const { setReadyStatus } = this.props
-    alert(message)
-    this.socket.close()
-    setReadyStatus(false)
-  }
+    const { setReadyStatus } = this.props;
+    alert(message);
+    this.socket.close();
+    setReadyStatus(false);
+  };
 
   updateUsers = users => {
-    this.setState({ users })
-  }
+    this.setState({ users });
+  };
 
   addNewMessage = message => {
-    const { history } = this.state
-    let newHistory = history.slice()
-    newHistory.push(message)
-    this.setState({ history: newHistory })
-  }
+    const { history } = this.state;
+    let newHistory = history.slice();
+    newHistory.push(message);
+    this.setState({ history: newHistory });
+  };
 
   setDraft = e => {
-    this.setState({ draft: e.target.value })
-    localStorage.setItem("draft", e.target.value)
-  }
+    this.setState({ draft: e.target.value });
+    localStorage.setItem("draft", e.target.value);
+  };
 
   sendMessage = e => {
     if (e.keyCode === 13) {
       // user pressed "Enter"
-      const { user } = this.props
-      const { history, draft } = this.state
-      this.socket.emit(EVENT.CLIENT_SEND_MESSAGE, { user, message: draft })
+      const { user } = this.props;
+      const { history, draft } = this.state;
+      this.socket.emit(EVENT.CLIENT_SEND_MESSAGE, { user, message: draft });
       // do an optimist update of history
-      const newHistory = history.slice()
+      const newHistory = history.slice();
       newHistory.push({
         user,
         message: draft
-      })
+      });
       this.setState({
         history: newHistory,
         draft: ""
-      })
-      localStorage.removeItem("draft")
+      });
+      localStorage.removeItem("draft");
     }
-  }
+  };
 
   render() {
-    const { history, users, draft } = this.state
-    
+    const { history, users, draft } = this.state;
+
     return (
       <div className="chat-room">
         <main>
           <div className="chat-list">
-            {
-              history.map((obj, index) => (
-                <p key={index}>
-                  <span style={{ color: obj.user.color }}>
-                    {`${obj.user.name}: `}
-                  </span>
-                  {obj.message}
-                </p>
-              ))
-            }
+            {history.map((obj, index) => (
+              <p key={index}>
+                <span style={{ color: obj.user.color }}>
+                  {`${obj.user.name}: `}
+                </span>
+                {obj.message}
+              </p>
+            ))}
           </div>
           <input
             autoFocus
@@ -120,27 +121,19 @@ class ChatRoom extends Component {
         </main>
         <aside>
           <div className="user-list">
-            {
-              users.map((user, index) => (
-                <p key={index}>
-                  <span>{user.name}</span>
-                </p>
-              ))
-            }
+            {users.map((user, index) => (
+              <p key={index}>
+                <span>{user.name}</span>
+              </p>
+            ))}
           </div>
-          <button
-            type="button"
-            onClick={this.leaveRoom}
-          >
+          <button type="button" onClick={this.leaveRoom}>
             Leave Room
           </button>
         </aside>
-        
-        
-        
       </div>
-    )
+    );
   }
 }
 
-export default ChatRoom
+export default ChatRoom;

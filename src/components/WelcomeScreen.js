@@ -2,26 +2,41 @@ import React, { Component } from "react";
 
 // https://flatuicolors.com/palette/de
 const colorPalette = [
-  "#fc5c65","#fd9644","#fed330","#26de81","#2bcbba","#eb3b5a","#fa8231","#f7b731","#20bf6b","#0fb9b1","#45aaf2","#4b7bec","#a55eea","#d1d8e0","#778ca3","#2d98da","#3867d6","#8854d0","#a5b1c2","#4b6584"
-]
+  "#fc5c65",
+  "#fd9644",
+  "#fed330",
+  "#26de81",
+  "#2bcbba",
+  "#eb3b5a",
+  "#fa8231",
+  "#f7b731",
+  "#20bf6b",
+  "#0fb9b1",
+  "#45aaf2",
+  "#4b7bec",
+  "#a55eea",
+  "#d1d8e0",
+  "#778ca3",
+  "#2d98da",
+  "#3867d6",
+  "#8854d0",
+  "#a5b1c2",
+  "#4b6584"
+];
 
 class WelcomeScreen extends Component {
-
   setUserProps = (prop, value) => {
-    const { user, setUser } = this.props
+    const { user, setUser } = this.props;
     setUser({
       ...user,
       [prop]: value
-    })
-  }
+    });
+  };
 
   render() {
-    const { user, setReadyStatus } = this.props
+    const { user, setReadyStatus } = this.props;
     return (
-      <form
-        className="user-form"
-        onSubmit={e => setReadyStatus(true) }
-      >
+      <form className="user-form" onSubmit={e => setReadyStatus(true)}>
         <div className="field">
           <input
             autoFocus
@@ -36,23 +51,21 @@ class WelcomeScreen extends Component {
         </div>
         <div className="field">
           <div className="color-palette">
-            {
-              colorPalette.map(color => (
-                <span
-                  key={color}
-                  style={{ background: color }}
-                  onClick={e => this.setUserProps("color", color)}
-                />
-              ))
-            }
+            {colorPalette.map(color => (
+              <span
+                key={color}
+                style={{ background: color }}
+                onClick={e => this.setUserProps("color", color)}
+              />
+            ))}
           </div>
         </div>
         <div className="field">
-          <button></button>
+          <button />
         </div>
       </form>
-    )
+    );
   }
 }
 
-export default WelcomeScreen
+export default WelcomeScreen;

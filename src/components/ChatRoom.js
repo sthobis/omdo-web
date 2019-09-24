@@ -25,7 +25,7 @@ class ChatRoom extends Component {
   componentDidMount() {
     const source =
       process.env.NODE_ENV === "production"
-        ? "https://omdo.duajarimanis.com"
+        ? "https://omd-api.sthobis.com"
         : "http://localhost:3003";
     this.socket = io(source, {
       reconnection: false
